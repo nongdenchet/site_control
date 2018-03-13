@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-import pickle
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+from sklearn.externals import joblib
 from collections import Counter
 from sklearn.metrics import confusion_matrix
 from sklearn.feature_extraction.text import CountVectorizer
@@ -47,14 +47,13 @@ def guess(url, dataset, model):
 
 # Save model
 def save_model(model, name):
-    with open(name, 'wb') as fid:
-        pickle.dump(model, fid, 2) 
+    joblib.dump(model, 'model.pkl')
 
 
 # Training
 def main():
     # Prepare data
-    dataset = pd.read_csv('input.csv')
+    dataset = pd.read_csv('data/input.csv')
     X = features(dataset)
     y = labels(dataset)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)

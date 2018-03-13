@@ -1,5 +1,4 @@
 import urllib
-import lxml
 import re
 import csv
 import json
@@ -74,7 +73,7 @@ def append_data(positive, negative, name):
 
 def scrap_sensitve_data():
     print('Loading negative')        
-    data = json.load(open('sensitive_sites.json'))
+    data = json.load(open('sites/sensitive_sites.json'))
     negative = []
     for x in data['data']:
         try:
@@ -87,13 +86,13 @@ def scrap_sensitve_data():
 
 
     print('Storing data')
-    append_data([], negative, 'input2.csv')
+    append_data([], negative, 'data/input2.csv')
     print('Done')
 
 
 def main():
     print('Loading positive')
-    data = json.load(open('adult_sites.json'))
+    data = json.load(open('sites/adult_sites.json'))
     positive = []
     for x in data['data']:
         try:
@@ -106,7 +105,7 @@ def main():
         
 
     print('Loading negative')        
-    data = json.load(open('normal_sites.json'))
+    data = json.load(open('sites/normal_sites.json'))
     negative = []
     for x in data['data']:
         try:
@@ -119,5 +118,5 @@ def main():
 
 
     print('Storing data')
-    write_data(positive, negative, 'input.csv')
+    write_data(positive, negative, 'data/input.csv')
     print('Done')
