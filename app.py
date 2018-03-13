@@ -1,11 +1,16 @@
 import pickle
 import pandas as pd
 import json
+import hashlib
+import uuid
+import os
 
 from flask import Flask, jsonify, request
 from training import guess
 from sklearn.externals import joblib
+from dotenv import load_dotenv, find_dotenv
 
+load_dotenv(find_dotenv())
 app = Flask(__name__)
 dataset = pd.read_csv('data/input.csv')
 model = joblib.load('model.pkl')
@@ -19,19 +24,35 @@ def format_url(url):
         return url
 
 
+# Encode data
+def hash(data, salt):
+    encoded = (data + salt).encode('utf-8')
+    hashed_data = hashlib.sha512(encoded).hexdigest()
+    return hashed_data
+
+
 @app.route('/')
 def validate():
     try:
-        url = format_url(request.args.get('url'))
-        result = guess(url, dataset, model)
-        positive = str(result[1][0][1] * 100) + '%'
-        negative = str(result[1][0][0] * 100) + '%'
-        data = { 'result': bool(str(result[0])), 'positive': positive, 'negative': negative }
-        print(data)
-        return jsonify(data)
+        secret = request.args.get('secret')
+        secret = '' if secret is None else secret
+        salt = uuid.uuid4().hex
+
+        if (hash(secret, salt) != hash(os.getenv('SECRET'), salt)):
+            return jsonify({ 'error': 'Wrong secret' }), 403
+        else:
+            url = format_url(request.args.get('url'))
+            print(url)
+            
+            result = guess(url, dataset, model)
+            positive = str(result[1][0][1] * 100) + '%'
+            negative = str(result[1][0][0] * 100) + '%'
+            data = { 'result': str(result[0]) == 'True', 'positive': positive, 'negative': negative }
+            print(data)
+            return jsonify(data)
     except Exception as error:
         print(error)
-        return jsonify({ 'error': 'Cannot inspect url' })
+        return jsonify({ 'error': 'Cannot inspect url' }), 400
 
 
 if __name__ == '__main__':
