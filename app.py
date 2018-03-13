@@ -16,6 +16,8 @@ dataset = pd.read_csv('data/input.csv')
 model = joblib.load('model.pkl')
 print('Finish loading')
 
+ignores = ['youtube.com']
+
 # Format http
 def format_url(url):
     if '//' not in url:
@@ -37,15 +39,24 @@ def validate():
         secret = request.args.get('secret')
         secret = '' if secret is None else secret
         salt = uuid.uuid4().hex
+        authenticated = hash(secret, salt) != hash(os.getenv('SECRET'), salt)
 
-        if (hash(secret, salt) != hash(os.getenv('SECRET'), salt)):
+        if (authenticated):
             return jsonify({ 'error': 'Wrong secret' }), 403
         else:
-            url = format_url(request.args.get('url'))            
+            url = format_url(request.args.get('url'))
+            for i in ignores:
+                if i in url:
+                    return jsonify({ 'result': False, 'positive': '0.0%', 'negative': '100.0%' })
+            
             result = guess(url, dataset, model)
             positive = str(result[1][0][1] * 100) + '%'
             negative = str(result[1][0][0] * 100) + '%'
-            data = { 'result': str(result[0]) == 'True', 'positive': positive, 'negative': negative }
+            data = { 
+                'result': str(result[0]) == 'True', 
+                'positive': positive, 
+                'negative': negative 
+            }
             print(data)
             return jsonify(data)
     except Exception as error:
