@@ -33,7 +33,7 @@ def hash(data, salt):
     return hashed_data
 
 
-@app.route('/')
+@app.route('/validate')
 def validate():
     try:
         secret = request.args.get('secret')
