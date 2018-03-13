@@ -2,13 +2,15 @@ import urllib.request
 import re
 import csv
 import json
+import ssl
 
 from bs4 import BeautifulSoup
 from lxml.html.clean import Cleaner
 
 def download(url):
-    req = urllib.request.Request(url, headers={'User-Agent': "Magic Browser"}) 
-    con = urllib.request.urlopen(req)
+    gcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+    req = urllib.request.Request(url, headers={'User-Agent': 'Magic Browser'}) 
+    con = urllib.request.urlopen(req, context=gcontext)
     return con.read()
 
 
