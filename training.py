@@ -84,7 +84,7 @@ def main():
     
     print("acc of using model: MultinomialNB is: ", accuracy_score(y_test, result1))
     print("acc of using model: KNeighborsClassifier is: ", accuracy_score(y_test, result2))
-    print("Confusion_matrix: SVC is: ", accuracy_score(y_test, result3))
-    print("Confusion_matrix: RandomForestClassifier is: ", accuracy_score(y_test, result4))
+    print("acc of using model: SVC is: ", accuracy_score(y_test, result3))
+    print("acc of using model: RandomForestClassifier is: ", accuracy_score(y_test, result4))
     
     

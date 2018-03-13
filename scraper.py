@@ -42,7 +42,7 @@ def to_document(url):
     return ' '.join(words)
 
 
-def write_data(positive, negative):
+def write_data(positive, negative, name):
     data = [['words', 'adult']]
     for i in positive:
         data.append([';'.join(i), 'yes'])
@@ -52,9 +52,43 @@ def write_data(positive, negative):
         data.append([';'.join(i), 'no'])
 
 
-    with open('input.csv', 'w') as file:
+    with open(name, 'w') as file:
         writer = csv.writer(file)
         writer.writerows(data)
+
+
+def append_data(positive, negative, name):
+    data = []
+    for i in positive:
+        data.append([';'.join(i), 'yes'])
+
+
+    for i in negative:
+        data.append([';'.join(i), 'no'])
+
+
+    with open(name, 'a') as file:
+        writer = csv.writer(file)
+        writer.writerows(data)
+
+
+def scrap_sensitve_data():
+    print('Loading negative')        
+    data = json.load(open('sensitive_sites.json'))
+    negative = []
+    for x in data['data']:
+        try:
+            content = to_words(beautify(clean(download(x))))
+            negative.append(content)
+            print('Done: ' + x)
+        except: 
+            print('Pass: ' + x)
+            pass
+
+
+    print('Storing data')
+    append_data([], negative, 'input2.csv')
+    print('Done')
 
 
 def main():
@@ -85,5 +119,5 @@ def main():
 
 
     print('Storing data')
-    write_data(positive, negative)
+    write_data(positive, negative, 'input.csv')
     print('Done')
