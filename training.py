@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pickle
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -44,6 +45,12 @@ def guess(url, dataset, model):
     return result[0] == 1, model.predict_proba(matrix)
 
 
+# Save model
+def save_model(model, name):
+    with open(name, 'wb') as fid:
+        pickle.dump(model, fid, 2) 
+
+
 # Training
 def main():
     # Prepare data
@@ -86,5 +93,8 @@ def main():
     print("acc of using model: KNeighborsClassifier is: ", accuracy_score(y_test, result2))
     print("acc of using model: SVC is: ", accuracy_score(y_test, result3))
     print("acc of using model: RandomForestClassifier is: ", accuracy_score(y_test, result4))
+    
+    # Save
+    save_model(model1, 'model.pkl')
     
     
