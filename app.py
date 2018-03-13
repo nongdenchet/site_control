@@ -41,9 +41,7 @@ def validate():
         if (hash(secret, salt) != hash(os.getenv('SECRET'), salt)):
             return jsonify({ 'error': 'Wrong secret' }), 403
         else:
-            url = format_url(request.args.get('url'))
-            print(url)
-            
+            url = format_url(request.args.get('url'))            
             result = guess(url, dataset, model)
             positive = str(result[1][0][1] * 100) + '%'
             negative = str(result[1][0][0] * 100) + '%'

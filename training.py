@@ -40,7 +40,8 @@ def labels(dataset):
 def guess(url, dataset, model):
     dictionary = dic_process(dataset)
     counter = CountVectorizer(vocabulary=dictionary.keys())
-    matrix = counter.fit_transform([to_document(url)]).toarray()
+    document = to_document(url)
+    matrix = counter.fit_transform([document]).toarray()
     result = model.predict(matrix)
     return result[0] == 1, model.predict_proba(matrix)
 
