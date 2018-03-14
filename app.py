@@ -44,6 +44,7 @@ def predict(_secret, _url):
         return None, 403
     else:
         url = format_url(_url)
+        print(url)
         for i in ignores:
             if i in url:
                 return (False, [[100.0, 0.0]]), 200
