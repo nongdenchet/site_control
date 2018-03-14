@@ -11,8 +11,10 @@ from sklearn.externals import joblib
 from dotenv import load_dotenv, find_dotenv
 from flask_cors import CORS
 
+# Load env
 load_dotenv(find_dotenv())
 
+# Load app
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 dataset = pd.read_csv('data/input.csv')
@@ -55,11 +57,15 @@ def home():
 def validate():
     url = request.form['url']
     secret = os.getenv('SECRET')
-    prediction = predict(secret, url)
-
-    clazz = 'red darken-4' if prediction[0][0] else 'teal'
-    title = 'This site is dangerous' if prediction[0][0] else 'This site is safe'
-    return render_template('index.html', url=url, clazz=clazz, title=title)
+    
+    try:
+        prediction = predict(secret, url)
+        clazz = 'red darken-4' if prediction[0][0] else 'teal'
+        title = 'This site is dangerous' if prediction[0][0] else 'This site is safe'
+        return render_template('index.html', url=url, clazz=clazz, title=title)
+    except Exception as error:
+        print(error)
+        return render_template('index.html', url=url, clazz='lime darken-3', title='Cannot inspect url')
 
 
 @app.route('/api/validate', methods=['POST'])
