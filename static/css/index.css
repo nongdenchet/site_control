@@ -44,3 +44,9 @@ body {
   right: 0;
   bottom: 0;
 }
+
+.white-icon {
+  color: white !important;
+  margin-top: 10px;
+  font-size: 48px;
+}

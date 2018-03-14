@@ -15,8 +15,13 @@
     <div class="row container">
       <form class="col m6 s12 offset-m3 predict-form" method="post" action="{{ url_for('validate') }}">
         <div class="row">
-          <div class="input-field col s12 m12">
+          <div class="input-field col s10 m10">
             <input placeholder="ENTER YOUR URL" type="text" name="url" value="{{ url }}">
+          </div>
+          <div class="col s2 m2">
+            <i class="material-icons white-icon" onClick="document.forms[0].submit()">
+              arrow_forward
+            </i>
           </div>
         </div>
       </form>
