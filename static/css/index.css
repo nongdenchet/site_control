@@ -1,0 +1,46 @@
+.input-field input[type=text] {
+  color: #fff;
+  font-size: 24px;
+  border-bottom: 1px solid #D1D1D1;
+  box-shadow: 0 1px 0 0 #D1D1D1;
+}
+
+.input-field input[type=text].valid {
+  border-bottom: 1px solid #fff;
+  box-shadow: 0 1px 0 0 #fff;
+}
+
+.input-field input[type=text]:focus {
+  border-bottom: 1px solid #fff !important;
+  box-shadow: 0 1px 0 0 #fff !important;
+}
+
+.container {
+  margin: 0 auto;
+  height: 100vh;
+  position: relative;
+}
+
+.predict-form {
+  position: absolute;
+  top: 30%;
+}
+
+body {
+  overflow: hidden;
+}
+
+.title {
+  color: white;
+  padding: 16px;
+  text-transform: uppercase;
+}
+
+.contact {
+  font-size: '32px';
+  color: white;
+  padding: 16px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}

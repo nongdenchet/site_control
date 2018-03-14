@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <title>Site Checker</title>
+  <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="icon" href="static/images/favicon.png">
+    <link type="text/css" rel="stylesheet" href="static/css/materialize.min.css" media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="static/css/index.css" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  </head>
+
+  <body class="{{ clazz }}">
+    <h5 class="title">{{ title }}</h5>
+    
+    <div class="row container">
+      <form class="col m6 s12 offset-m3 predict-form" method="post" action="{{ url_for('validate') }}">
+        <div class="row">
+          <div class="input-field col s12 m12">
+            <input placeholder="ENTER YOUR URL" type="text" name="url" value="{{ url }}">
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="contact">
+      nongdenchet8435848@gmail.com
+    </div>
+  </body>
+</html>

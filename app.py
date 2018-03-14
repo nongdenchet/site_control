@@ -2,23 +2,23 @@ import pickle
 import pandas as pd
 import json
 import hashlib
-import uuid
 import os
+import json
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from training import guess
 from sklearn.externals import joblib
 from dotenv import load_dotenv, find_dotenv
+from flask_cors import CORS
 
 load_dotenv(find_dotenv())
+
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 dataset = pd.read_csv('data/input.csv')
 model = joblib.load('model.pkl')
-print('Finish loading')
-
 ignores = ['youtube.com']
 
-# Format http
 def format_url(url):
     if '//' not in url:
         return '%s%s' % ('http://', url)
@@ -26,44 +26,64 @@ def format_url(url):
         return url
 
 
-# Encode data
-def hash(data, salt):
-    encoded = (data + salt).encode('utf-8')
+def hash(data):
+    encoded = data.encode('utf-8')
     hashed_data = hashlib.sha512(encoded).hexdigest()
     return hashed_data
 
 
-@app.route('/validate')
-def validate():
-    try:
-        secret = request.args.get('secret')
-        secret = '' if secret is None else secret
-        salt = uuid.uuid4().hex
-        authenticated = hash(secret, salt) != hash(os.getenv('SECRET'), salt)
+def predict(_secret, _url):
+    secret = '' if _secret is None else _secret
+    authenticated = hash(secret) != os.getenv('SECRET_HASH')
 
-        if (authenticated):
+    if (authenticated):
+        return None, 403
+    else:
+        url = format_url(_url)
+        for i in ignores:
+            if i in url:
+                return (False, [[100.0, 0.0]]), 200
+        return guess(url, dataset, model), 200
+
+
+@app.route('/')
+def home():
+    return render_template('index.html', url='', clazz='teal', title='Check adult website')
+
+
+@app.route('/', methods=['POST'])
+def validate():
+    url = request.form['url']
+    secret = os.getenv('SECRET')
+    prediction = predict(secret, url)
+
+    clazz = 'red darken-4' if prediction[0][0] else 'teal'
+    title = 'This site is dangerous' if prediction[0][0] else 'This site is safe'
+    return render_template('index.html', url=url, clazz=clazz, title=title)
+
+
+@app.route('/api/validate', methods=['POST'])
+def api_validate():
+    try:
+        data = data = request.get_json()
+        prediction = predict(data['secret'], data['url'])
+
+        if (prediction[1] == 403):
             return jsonify({ 'error': 'Wrong secret' }), 403
         else:
-            url = format_url(request.args.get('url'))
-            for i in ignores:
-                if i in url:
-                    return jsonify({ 'result': False, 'positive': '0.0%', 'negative': '100.0%' })
-            
-            result = guess(url, dataset, model)
-            positive = str(result[1][0][1] * 100) + '%'
-            negative = str(result[1][0][0] * 100) + '%'
-            data = { 
+            result = prediction[0]
+            data = {
                 'result': str(result[0]) == 'True', 
-                'positive': positive, 
-                'negative': negative 
+                'positive': str(result[1][0][1] * 100) + '%', 
+                'negative': str(result[1][0][0] * 100) + '%' 
             }
             print(data)
-            return jsonify(data)
+            return jsonify(data), 200
     except Exception as error:
         print(error)
         return jsonify({ 'error': 'Cannot inspect url' }), 400
 
 
 if __name__ == '__main__':
-  app.run()
+  app.run(host='0.0.0.0')
 
