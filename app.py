@@ -19,6 +19,8 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 dataset = pd.read_csv('data/input.csv')
 model = joblib.load('model.pkl')
+
+# TODO: need to improve
 ignores = ['youtube.com']
 
 def format_url(url):
@@ -62,6 +64,7 @@ def validate():
         prediction = predict(secret, url)
         clazz = 'red darken-4' if prediction[0][0] else 'teal'
         title = 'This site is dangerous' if prediction[0][0] else 'This site is safe'
+        print(prediction)
         return render_template('index.html', url=url, clazz=clazz, title=title)
     except Exception as error:
         print(error)
@@ -83,7 +86,7 @@ def api_validate():
                 'positive': str(result[1][0][1] * 100) + '%', 
                 'negative': str(result[1][0][0] * 100) + '%' 
             }
-            print(data)
+            print(prediction)
             return jsonify(data), 200
     except Exception as error:
         print(error)
